@@ -5,7 +5,7 @@ class Player {
         this.height = 100
         this.x = this.game.width * 0.5 - this.width * 0.5
         this.y = this.game.height - this.height - 20
-        this.speed = 5
+        this.speed = 0
     }
     draw(context) {
         context.fillRect(this.x, this.y, this.width, this.height)
@@ -14,6 +14,17 @@ class Player {
         this.x = this.x + this.speed
         if (this.x > this.game.width - 110) {
             this.speed = 0
+            this.x = this.game.width - 110
+        }
+        if (this.x < 10) {
+            this.speed = 0
+            this.x = 10
+        }
+        if (this.game.keys.indexOf('ArrowLeft') > -1) {
+            this.speed = this.speed - 1
+        }
+        if (this.game.keys.indexOf('ArrowRight') > -1) {
+            this.speed = this.speed + 1
         }
     }
 }
@@ -31,10 +42,20 @@ class Game {
         this.player = new Player(this)
 
         window.addEventListener('keydown', (e) => {
-            this.keys.push(e.key)
-            console.log(this.keys)
+            if (this.keys.indexOf(e.key) === -1) {
+                this.keys.push(e.key)
+            }
+            console.log('this.keys: ', this.keys)
+        })
+
+        window.addEventListener('keyup', (e) => {
+            if (this.keys.indexOf(e.key) > -1) {
+                this.keys.length = 0
+            }
+            console.log('this.keys: ', this.keys)
         })
     }
+
     render(context) {
         this.player.draw(context)
         this.player.update()
