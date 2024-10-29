@@ -52,15 +52,18 @@ class Projectile {
         }
     }
     update() {
+        // console.log('Updating projectile...')
         if (!this.unused) {
             this.y -= this.speed
+        }
+        if (this.y < 0) {
+            this.unused = true
         }
     }
     start(x, y) {
         this.x = x
         this.y = y
         this.unused = false
-        console.log('Starting!')
     }
     reset() {
         this.unused = true
@@ -78,9 +81,8 @@ class Game {
         this.player = new Player(this)
 
         this.projectilesPool = []
-        this.numberOfProjectiles = 10
+        this.numberOfProjectiles = 3
         this.createProjectiles()
-        console.log('Projectiles pool:', this.projectilesPool)
 
         window.addEventListener('keydown', (e) => {
             if (this.keys.indexOf(e.key) === -1) {
