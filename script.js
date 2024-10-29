@@ -69,7 +69,19 @@ class Projectile {
     }
 }
 
-class Enemy {}
+class Enemy {
+    constructor(game) {
+        this.game = game
+        this.height
+        this.width
+        this.x
+        this.y
+    }
+    draw(context) {
+        context.strokeRect(this.x, this.y, this.width, this.height)
+    }
+    update() {}
+}
 
 class Game {
     constructor(canvas) {
