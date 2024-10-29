@@ -27,9 +27,45 @@ class Player {
             this.speed = this.speed + 1
         }
     }
+
+    shoot() {
+        console.log('Shooting!')
+        const projectile = this.game.getProjectile()
+        if (projectile) {
+            projectile.start(this.x, this.y)
+        }
+    }
 }
 
-class Projectile {}
+class Projectile {
+    constructor() {
+        this.width = 4
+        this.height = 20
+        this.x = 0
+        this.y = 0
+        this.speed = 20
+        this.unused = true
+    }
+    draw(context) {
+        if (!this.unused) {
+            context.fillRect(this.x, this.y, this.width, this.height)
+        }
+    }
+    update() {
+        if (!this.unused) {
+            this.y -= this.speed
+        }
+    }
+    start(x, y) {
+        this.x = x
+        this.y = y
+        this.unused = false
+        console.log('Starting!')
+    }
+    reset() {
+        this.unused = true
+    }
+}
 
 class Enemy {}
 
@@ -41,9 +77,17 @@ class Game {
         this.keys = []
         this.player = new Player(this)
 
+        this.projectilesPool = []
+        this.numberOfProjectiles = 10
+        this.createProjectiles()
+        console.log('Projectiles pool:', this.projectilesPool)
+
         window.addEventListener('keydown', (e) => {
             if (this.keys.indexOf(e.key) === -1) {
                 this.keys.push(e.key)
+            }
+            if (e.key === '1') {
+                this.player.shoot()
             }
             console.log('this.keys: ', this.keys)
         })
@@ -59,6 +103,28 @@ class Game {
     render(context) {
         this.player.draw(context)
         this.player.update()
+        this.projectilesPool.forEach((projectile) => {
+            projectile.update()
+            projectile.draw(context)
+        })
+    }
+
+    createProjectiles() {
+        console.log('Creating projectiles...')
+        for (let i = 0; i < this.numberOfProjectiles; i++) {
+            this.projectilesPool.push(new Projectile())
+        }
+    }
+
+    getProjectile() {
+        console.log('Getting projectile...')
+        for (let i = 0; i < this.projectilesPool.length; i++) {
+            console.log(i, this.projectilesPool[i].unused)
+            if (this.projectilesPool[i].unused) {
+                console.log(`Projectile ${i} is unused`)
+                return this.projectilesPool[i]
+            }
+        }
     }
 }
 
