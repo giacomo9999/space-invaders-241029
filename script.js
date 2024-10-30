@@ -29,7 +29,6 @@ class Player {
     }
 
     shoot() {
-        console.log('Shooting!')
         const projectile = this.game.getProjectile()
         if (projectile) {
             projectile.start(this.x + this.width / 2, this.y)
@@ -70,17 +69,63 @@ class Projectile {
 }
 
 class Enemy {
-    constructor(game) {
+    constructor(game, positionX, positionY) {
         this.game = game
-        this.height
-        this.width
-        this.x
-        this.y
+        this.height = this.game.enemySize
+        this.width = this.game.enemySize
+        this.x = positionX
+        this.y = positionY
     }
+
     draw(context) {
+        console.log('Drawing enemy...', this.x, this.y, this.width, this.height)
         context.strokeRect(this.x, this.y, this.width, this.height)
     }
-    update() {}
+    update(x, y) {
+        this.positionX = x + this.positionX
+        this.positionY = y + this.positionY
+    }
+}
+
+class Wave {
+    constructor(game) {
+        this.game = game
+        this.height = this.game.rows * this.game.enemySize
+        this.width = this.game.columns * this.game.enemySize
+        this.x = 0
+        this.y = 0
+        this.speedX = 3
+        this.speedY = 0
+        this.enemies = []
+        this.create()
+    }
+
+    create() {
+        console.log('Creating enemies...')
+        for (let i = 0; i < this.game.rows; i++) {
+            for (let j = 0; j < this.game.columns; j++) {
+                let enemyX = this.game.enemySize * j
+                let enemyY = this.game.enemySize * i
+                this.enemies.push(new Enemy(this.game, enemyX, enemyY))
+            }
+        }
+    }
+
+    render(context) {
+        this.speedY = 0
+        context.strokeRect(this.x, this.y, this.width, this.height)
+        this.x += this.speedX
+        if (this.x < 0 || this.x > this.game.width - this.width) {
+            this.speedX *= -1
+            this.speedY = this.game.enemySize * 0.5
+        }
+        this.x += this.speedX
+        this.y += this.speedY
+        this.enemies.forEach((enemy) => {
+            enemy.draw(context)
+            enemy.update(this.x, this.y)
+        })
+    }
 }
 
 class Game {
@@ -95,6 +140,13 @@ class Game {
         this.numberOfProjectiles = 10
         this.createProjectiles()
 
+        this.columns = 3
+        this.rows = 3
+        this.enemySize = 60
+
+        this.waves = []
+        this.waves.push(new Wave(this))
+
         window.addEventListener('keydown', (e) => {
             if (this.keys.indexOf(e.key) === -1) {
                 this.keys.push(e.key)
@@ -102,20 +154,21 @@ class Game {
             if (e.key === '1') {
                 this.player.shoot()
             }
-            console.log('this.keys: ', this.keys)
         })
 
         window.addEventListener('keyup', (e) => {
             if (this.keys.indexOf(e.key) > -1) {
                 this.keys.length = 0
             }
-            console.log('this.keys: ', this.keys)
         })
     }
 
     render(context) {
         this.player.draw(context)
         this.player.update()
+        this.waves.forEach((wave) => {
+            wave.render(context)
+        })
         this.projectilesPool.forEach((projectile) => {
             projectile.update()
             projectile.draw(context)
@@ -123,18 +176,14 @@ class Game {
     }
 
     createProjectiles() {
-        console.log('Creating projectiles...')
         for (let i = 0; i < this.numberOfProjectiles; i++) {
             this.projectilesPool.push(new Projectile())
         }
     }
 
     getProjectile() {
-        console.log('Getting projectile...')
         for (let i = 0; i < this.projectilesPool.length; i++) {
-            console.log(i, this.projectilesPool[i].unused)
             if (this.projectilesPool[i].unused) {
-                console.log(`Projectile ${i} is unused`)
                 return this.projectilesPool[i]
             }
         }
@@ -148,6 +197,7 @@ window.addEventListener('load', () => {
     canvas.width = 600
     canvas.height = 800
     ctx.fillStyle = 'white'
+    ctx.strokeStyle = 'white'
 
     const game = new Game(canvas)
 
