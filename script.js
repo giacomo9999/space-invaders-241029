@@ -73,17 +73,18 @@ class Enemy {
         this.game = game
         this.height = this.game.enemySize
         this.width = this.game.enemySize
-        this.x = positionX
-        this.y = positionY
+        this.x = 0
+        this.y = 0
+        this.positionX = positionX
+        this.positionY = positionY
     }
 
     draw(context) {
-        console.log('Drawing enemy...', this.x, this.y, this.width, this.height)
         context.strokeRect(this.x, this.y, this.width, this.height)
     }
     update(x, y) {
-        this.positionX = x + this.positionX
-        this.positionY = y + this.positionY
+        this.x = x + this.positionX
+        this.y = y + this.positionY
     }
 }
 
@@ -122,8 +123,8 @@ class Wave {
         this.x += this.speedX
         this.y += this.speedY
         this.enemies.forEach((enemy) => {
-            enemy.draw(context)
             enemy.update(this.x, this.y)
+            enemy.draw(context)
         })
     }
 }
@@ -198,6 +199,7 @@ window.addEventListener('load', () => {
     canvas.height = 800
     ctx.fillStyle = 'white'
     ctx.strokeStyle = 'white'
+    ctx.lineWidth = 3
 
     const game = new Game(canvas)
 
