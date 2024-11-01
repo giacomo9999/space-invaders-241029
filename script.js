@@ -94,25 +94,17 @@ class Wave {
         this.height = this.game.rows * this.game.enemySize
         this.width = this.game.columns * this.game.enemySize
         this.x = 0
-        this.y = 0
-        this.speedX = 3
+        this.y = -this.height
+        this.speedX = 2
         this.speedY = 0
         this.enemies = []
         this.create()
     }
 
-    create() {
-        console.log('Creating enemies...')
-        for (let i = 0; i < this.game.rows; i++) {
-            for (let j = 0; j < this.game.columns; j++) {
-                let enemyX = this.game.enemySize * j
-                let enemyY = this.game.enemySize * i
-                this.enemies.push(new Enemy(this.game, enemyX, enemyY))
-            }
-        }
-    }
-
     render(context) {
+        if (this.y < 0) {
+            this.y += 5
+        }
         this.speedY = 0
         context.strokeRect(this.x, this.y, this.width, this.height)
         this.x += this.speedX
@@ -126,6 +118,17 @@ class Wave {
             enemy.update(this.x, this.y)
             enemy.draw(context)
         })
+    }
+
+    create() {
+        console.log('Creating enemies...')
+        for (let i = 0; i < this.game.rows; i++) {
+            for (let j = 0; j < this.game.columns; j++) {
+                let enemyX = this.game.enemySize * j
+                let enemyY = this.game.enemySize * i
+                this.enemies.push(new Enemy(this.game, enemyX, enemyY))
+            }
+        }
     }
 }
 
@@ -141,8 +144,8 @@ class Game {
         this.numberOfProjectiles = 10
         this.createProjectiles()
 
-        this.columns = 3
-        this.rows = 3
+        this.columns = 4
+        this.rows = 6
         this.enemySize = 60
 
         this.waves = []
