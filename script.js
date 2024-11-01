@@ -77,6 +77,7 @@ class Enemy {
         this.y = 0
         this.positionX = positionX
         this.positionY = positionY
+        this.markedForDeletion = false
     }
 
     draw(context) {
@@ -85,6 +86,12 @@ class Enemy {
     update(x, y) {
         this.x = x + this.positionX
         this.y = y + this.positionY
+        this.game.projectilesPool.forEach((proj) => {
+            if (!proj.unused && this.game.checkCollision(this, proj)) {
+                this.markedForDeletion = true
+                proj.reset()
+            }
+        })
     }
 }
 
@@ -106,7 +113,7 @@ class Wave {
             this.y += 5
         }
         this.speedY = 0
-        context.strokeRect(this.x, this.y, this.width, this.height)
+        // context.strokeRect(this.x, this.y, this.width, this.height)
         this.x += this.speedX
         if (this.x < 0 || this.x > this.game.width - this.width) {
             this.speedX *= -1
@@ -118,10 +125,11 @@ class Wave {
             enemy.update(this.x, this.y)
             enemy.draw(context)
         })
+
+        this.enemies = this.enemies.filter((enemy) => !enemy.markedForDeletion)
     }
 
     create() {
-        console.log('Creating enemies...')
         for (let i = 0; i < this.game.rows; i++) {
             for (let j = 0; j < this.game.columns; j++) {
                 let enemyX = this.game.enemySize * j
@@ -141,11 +149,11 @@ class Game {
         this.player = new Player(this)
 
         this.projectilesPool = []
-        this.numberOfProjectiles = 10
+        this.numberOfProjectiles = 3
         this.createProjectiles()
 
-        this.columns = 4
-        this.rows = 6
+        this.columns = 2
+        this.rows = 2
         this.enemySize = 60
 
         this.waves = []
@@ -191,6 +199,15 @@ class Game {
                 return this.projectilesPool[i]
             }
         }
+    }
+
+    checkCollision(a, b) {
+        return (
+            a.x < b.x + b.width &&
+            a.x + a.width > b.x &&
+            a.y < b.y + b.height &&
+            a.y + a.height > b.y
+        )
     }
 }
 
