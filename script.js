@@ -152,8 +152,8 @@ class Game {
         this.numberOfProjectiles = 3
         this.createProjectiles()
 
-        this.columns = 2
-        this.rows = 2
+        this.columns = 4
+        this.rows = 4
         this.enemySize = 60
 
         this.waves = []
