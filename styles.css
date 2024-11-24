@@ -3,7 +3,7 @@ body {
 }
 
 #canvas1 {
-    background-image: url('images/background_241029.png');
+    /* background-image: url('images/background_241029.png'); */
     border: 2px solid black;
     position: absolute;
     top: 50%;

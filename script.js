@@ -8,46 +8,17 @@ class Player {
         this.speed = 1
     }
     draw(context) {
-        context.fillRect(this.x, this.y, this.height, this.width)
+        context.fillRect(this.x, this.y, this.width, this.height)
     }
     update() {
-        if (this.game.inputs[0] === 'ArrowRight') {
-            this.speed += 1
-        }
-        if (this.game.inputs[0] === 'ArrowLeft') {
-            this.speed -= 1
-        }
-
         this.x += this.speed
-
-        if (this.x < 0 - this.width * 0.5) {
-            this.speed = 0
-            this.x = 0 - this.width * 0.5
-        }
-        if (this.x > this.game.canvas.width - this.width * 0.5) {
-            this.speed = 0
-            this.x = this.game.canvas.width - this.width * 0.5
-        }
     }
 }
 
 class Game {
     constructor(canvas) {
         this.canvas = canvas
-        this.inputs = []
         this.player = new Player(this)
-        document.addEventListener('keydown', (e) => {
-            if (this.inputs.indexOf(e.key) === -1) {
-                this.inputs.push(e.key)
-            }
-            console.log(this.inputs)
-        })
-        document.addEventListener('keyup', (e) => {
-            if (this.inputs.indexOf(e.key) !== -1) {
-                this.inputs.splice(this.inputs.indexOf(e.key), 1)
-            }
-            console.log(this.inputs)
-        })
     }
     render(context) {
         this.player.draw(context)
@@ -57,8 +28,8 @@ class Game {
 
 window.addEventListener('load', () => {
     const canvas = document.querySelector('#canvas1')
-    canvas.height = 800
     canvas.width = 600
+    canvas.height = 800
     const ctx = canvas.getContext('2d')
     const game = new Game(canvas)
     const animate = () => {
