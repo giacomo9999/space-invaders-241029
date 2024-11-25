@@ -1,8 +1,8 @@
 class Player {
     constructor(game) {
         this.game = game
-        this.height = 100
         this.width = 100
+        this.height = 100
         this.x = this.game.canvas.width * 0.5 - this.width * 0.5
         this.y = this.game.canvas.height - this.height - 10
         this.speed = 1
@@ -10,21 +10,8 @@ class Player {
     draw(context) {
         context.fillRect(this.x, this.y, this.width, this.height)
     }
+
     update() {
-        if (this.x < 0 - this.width * 0.5) {
-            this.x = 0 - this.width * 0.5
-            this.speed = 0
-        }
-        if (this.x > this.game.canvas.width - this.width * 0.5) {
-            this.x = this.game.canvas.width - this.width * 0.5
-            this.speed = 0
-        }
-        if (this.game.keyInputs.indexOf('ArrowRight') !== -1) {
-            this.speed += 1
-        }
-        if (this.game.keyInputs.indexOf('ArrowLeft') !== -1) {
-            this.speed -= 1
-        }
         this.x += this.speed
     }
 }
@@ -33,18 +20,6 @@ class Game {
     constructor(canvas) {
         this.canvas = canvas
         this.player = new Player(this)
-        this.keyInputs = []
-        document.addEventListener('keydown', (e) => {
-            if (this.keyInputs.indexOf(e.key) === -1) {
-                this.keyInputs.push(e.key)
-                console.log(this.keyInputs)
-            }
-        })
-        document.addEventListener('keyup', (e) => {
-            if (this.keyInputs.indexOf(e.key) !== -1) {
-                this.keyInputs.splice(this.keyInputs.indexOf(e.key), 1)
-            }
-        })
     }
     render(context) {
         this.player.draw(context)
