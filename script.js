@@ -12,6 +12,21 @@ class Player {
     }
 
     update() {
+        if (this.x < 0 - this.width * 0.5) {
+            this.speed = 0
+            this.x = -this.width * 0.5
+        }
+        if (this.x > this.game.canvas.width - this.width * 0.5) {
+            this.speed = 0
+            this.x = this.game.canvas.width - this.width * 0.5
+        }
+        if (this.game.keyInputs.indexOf('ArrowRight') != -1) {
+            this.speed += 1
+        }
+        if (this.game.keyInputs.indexOf('ArrowLeft') != -1) {
+            this.speed -= 1
+        }
+
         this.x += this.speed
     }
 }
@@ -20,6 +35,21 @@ class Game {
     constructor(canvas) {
         this.canvas = canvas
         this.player = new Player(this)
+        this.keyInputs = []
+
+        document.addEventListener('keydown', (e) => {
+            console.log(e.key)
+            if (this.keyInputs.indexOf(e.key) === -1) {
+                this.keyInputs.push(e.key)
+            }
+        })
+
+        document.addEventListener('keyup', (e) => {
+            console.log(e.key)
+            if (this.keyInputs.indexOf(e.key) != -1) {
+                this.keyInputs.splice(this.keyInputs.indexOf(e.key), 1)
+            }
+        })
     }
     render(context) {
         this.player.draw(context)
