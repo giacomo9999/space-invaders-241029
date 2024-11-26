@@ -11,6 +11,20 @@ class Player {
         context.fillRect(this.x, this.y, this.height, this.width)
     }
     update() {
+        if (this.x < 0 - this.width * 0.5) {
+            this.x = 0 - this.width * 0.5
+            this.speed = 0
+        }
+        if (this.x > this.game.canvas.width - this.width * 0.5) {
+            this.x = this.game.canvas.width - this.width * 0.5
+            this.speed = 0
+        }
+        if (this.game.keyInputs[0] === 'ArrowRight') {
+            this.speed += 1
+        }
+        if (this.game.keyInputs[0] === 'ArrowLeft') {
+            this.speed -= 1
+        }
         this.x += this.speed
     }
 }
