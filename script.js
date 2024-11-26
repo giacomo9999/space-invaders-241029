@@ -19,6 +19,20 @@ class Game {
     constructor(canvas) {
         this.canvas = canvas
         this.player = new Player(this)
+        this.keyInputs = []
+
+        document.addEventListener('keydown', (e) => {
+            if (this.keyInputs.indexOf(e.key) === -1) {
+                this.keyInputs.push(e.key)
+                console.log(this.keyInputs)
+            }
+        })
+        document.addEventListener('keyup', (e) => {
+            if (this.keyInputs.indexOf(e.key) !== -1) {
+                this.keyInputs.splice(this.keyInputs.indexOf(e.key), 1)
+                console.log(this.keyInputs)
+            }
+        })
     }
     render(context) {
         this.player.draw(context)
