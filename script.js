@@ -1,8 +1,8 @@
 class Player {
     constructor(game) {
         this.game = game
-        this.height = 100
         this.width = 100
+        this.height = 100
         this.x = this.game.canvas.width * 0.5 - this.width * 0.5
         this.y = this.game.canvas.height - this.height - 10
         this.speed = 1
@@ -11,13 +11,13 @@ class Player {
         context.fillRect(this.x, this.y, this.width, this.height)
     }
     update() {
-        if (this.x < 0 - this.width * 0.5) {
-            this.x = -this.width * 0.5
+        if (this.x < -this.width * 0.5 + 5) {
             this.speed = 0
+            this.x = -this.width * 0.5 + 5
         }
-        if (this.x > this.game.canvas.width - this.width * 0.5) {
-            this.x = this.game.canvas.width - this.width * 0.5
+        if (this.x > this.game.canvas.width - this.width * 0.5 - 5) {
             this.speed = 0
+            this.x = this.game.canvas.width - this.width * 0.5 - 5
         }
         if (this.game.keyInputs[0] === 'ArrowRight') {
             this.speed += 1
@@ -28,22 +28,22 @@ class Player {
         this.x += this.speed
     }
     shoot() {
-        console.log('Shooting!')
+        console.log('Shooting...')
         const bullet = this.game.getBullet()
         if (bullet) {
-            bullet.activate(this.x, this.y)
+            bullet.activate(this.x + this.width * 0.5, this.y)
         }
     }
 }
 
 class Bullet {
-    constructor() {
-        this.width = 5
-        this.height = 20
+    constructor(game) {
         this.x = 0
         this.y = 0
-        this.inUse = false
+        this.width = 5
+        this.height = 20
         this.speed = 20
+        this.inUse = false
     }
     draw(context) {
         if (this.inUse) {
@@ -51,17 +51,16 @@ class Bullet {
         }
     }
     update() {
-        if (this.inUse) {
-            this.y -= this.speed
-            if (this.y < -10) {
-                this.inUse = false
-            }
+        this.y -= this.speed
+        if (this.y < -this.height) {
+            this.inUse = false
         }
     }
     activate(x, y) {
+        console.log('Activating..')
+        this.inUse = true
         this.x = x
         this.y = y
-        this.inUse = true
     }
     deactivate() {
         this.inUse = false
@@ -87,23 +86,21 @@ class Game {
             console.log(this.keyInputs)
         })
         document.addEventListener('keyup', (e) => {
-            if (this.keyInputs.indexOf(e.key) !== -1) {
-                // this.keyInputs.splice(this.keyInputs.indexOf(e.key), 1)
-                this.keyInputs.length = 0
-            }
+            this.keyInputs.length = 0
             console.log(this.keyInputs)
         })
-    }
-    fillBulletsPool() {
-        for (let i = 0; i < this.numberOfBullets; i++) {
-            this.bulletsPool.push(new Bullet(this))
-        }
     }
     getBullet() {
         for (let i = 0; i < this.bulletsPool.length; i++) {
             if (!this.bulletsPool[i].inUse) {
                 return this.bulletsPool[i]
             }
+        }
+    }
+
+    fillBulletsPool() {
+        for (let i = 0; i < this.numberOfBullets; i++) {
+            this.bulletsPool.push(new Bullet(this))
         }
     }
     render(context) {
