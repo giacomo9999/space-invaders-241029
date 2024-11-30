@@ -11,38 +11,38 @@ class Player {
         context.fillRect(this.x, this.y, this.width, this.height)
     }
     update() {
+        if (this.x < 0 - this.width * 0.5 + 5) {
+            this.x = 0 - this.width * 0.5
+            this.speed = 0
+            this.x = 0 - this.width * 0.5 + 5
+        }
+        if (this.x > this.game.canvas.width - this.width * 0.5 - 5) {
+            this.speed = 0
+            this.x = this.game.canvas.width - this.width * 0.5 - 5
+        }
         if (this.game.keyInputs[0] === 'ArrowRight') {
             this.speed += 1
         }
         if (this.game.keyInputs[0] === 'ArrowLeft') {
             this.speed -= 1
         }
-        if (this.x < 0 - this.width * 0.5) {
-            this.x = -this.width * 0.5
-            this.speed = 0
-        }
-        if (this.x > this.game.canvas.width - this.width * 0.5) {
-            this.x = this.game.canvas.width - this.width * 0.5
-            this.speed = 0
-        }
         this.x += this.speed
     }
     shoot() {
-        console.log('Shooting...')
         const bullet = this.game.getBullet()
-        console.log('Shoot:', bullet)
         if (bullet) {
             bullet.activate(this.x, this.y)
         }
     }
 }
+
 class Bullet {
     constructor(game) {
         this.game = game
         this.width = 5
         this.height = 20
-        this.x = 0
-        this.y = 0
+        this.x = this.game.player.x
+        this.y = this.game.player.y
         this.speed = 10
         this.inUse = false
     }
@@ -51,7 +51,7 @@ class Bullet {
     }
     update() {
         this.y -= this.speed
-        if (this.y < -20) {
+        if (this.y < 0 - this.height) {
             this.inUse = false
         }
     }
@@ -60,6 +60,7 @@ class Bullet {
         this.x = x + this.game.player.width * 0.5
         this.y = y
     }
+
     deactivate() {
         this.inUse = false
     }
@@ -68,12 +69,12 @@ class Bullet {
 class Game {
     constructor(canvas) {
         this.canvas = canvas
+        this.player = new Player(this)
         this.keyInputs = []
         this.bulletsPool = []
         this.numberOfBullets = 10
-        this.player = new Player(this)
-        this.fillBulletsPool()
-        console.log(this.bulletsPool)
+        console.log(this.player.game)
+        this.initializeBulletsPool()
 
         document.addEventListener('keydown', (e) => {
             if (this.keyInputs.indexOf(e.key) === -1) {
@@ -83,32 +84,35 @@ class Game {
                 this.player.shoot()
             }
         })
-        document.addEventListener('keyup', (e) => {
+
+        document.addEventListener('keyup', () => {
             this.keyInputs.length = 0
         })
     }
-    fillBulletsPool() {
+
+    initializeBulletsPool() {
         for (let i = 0; i < this.numberOfBullets; i++) {
             this.bulletsPool.push(new Bullet(this))
         }
+        console.log(this.bulletsPool)
     }
-
     getBullet() {
-        for (let i = 0; i < this.bulletsPool.length; i++) {
-            console.log(this.bulletsPool[i])
-            if (this.bulletsPool[i].inUse === false) {
+        for (let i = 0; i < this.numberOfBullets; i++) {
+            if (!this.bulletsPool[i].inUse) {
+                console.log('Bullet available')
                 return this.bulletsPool[i]
             }
         }
     }
-
     render(context) {
         this.player.draw(context)
         this.player.update()
-        this.bulletsPool.forEach((bullet) => {
-            bullet.draw(context)
-            bullet.update()
-        })
+        for (let i = 0; i < this.numberOfBullets; i++) {
+            if (this.bulletsPool[i].inUse) {
+                this.bulletsPool[i].draw(context)
+                this.bulletsPool[i].update()
+            }
+        }
     }
 }
 
